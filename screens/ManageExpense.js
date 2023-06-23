@@ -1,23 +1,27 @@
-import { Text, View, Button, StyleSheet, Pressable } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import Screen from "../components/Screen";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { GlobalStyles } from "../assets/styles/GlobalStyles";
 import { ExpensesContext } from "../store/context/Expenses-Context";
 import { useContext } from "react";
+import ManageExpenseForm from "../components/manageExpense/ManageExpenseForm";
 
 function ManageExpense({ navigation, route }) {
   const context = useContext(ExpensesContext);
   let type;
   let id;
   let executable;
+  let trashBen = null;
 
-  function addExpenseHandler() {
-    context.addExpense("book", 19.99, "08-19-04");
+  let selectedExpense;
+
+  function addExpenseHandler(data) {
+    context.addExpense(data.reason, data.amount, data.date);
     navigation.goBack();
   }
 
-  function updateHandler(id) {
-    context.updateExpense(id, "movie", 7.99, "08-19-04");
+  function updateHandler(id, data) {
+    context.updateExpense(id, data.reason, data.amount, data.date);
     navigation.goBack();
   }
 
@@ -29,7 +33,16 @@ function ManageExpense({ navigation, route }) {
     navigation.setOptions({ title: "Update Expense" });
     id = route.params.expenseId;
     type = "Update";
+    selectedExpense = context.expenses.find(
+      (expense) => context.expenses.indexOf(expense) == id
+    );
+
     executable = updateHandler.bind(this, id);
+    trashBen = (
+      <Pressable onPress={deleteHandler}>
+        <Ionicons name="trash-bin" style={{ color: "red", fontSize: 35 }} />
+      </Pressable>
+    );
   }
 
   function cancelHandler() {
@@ -42,29 +55,13 @@ function ManageExpense({ navigation, route }) {
   }
   return (
     <Screen>
-      <View style={styles.btnContainer}>
-        <Pressable
-          style={[styles.btn, { opacity: 0.5 }]}
-          onPress={cancelHandler}
-        >
-          <Text style={styles.text}>Cancel</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.btn,
-            { backgroundColor: GlobalStyles.colors.lavander },
-          ]}
-          onPress={executable}
-        >
-          <Text style={styles.text}>{type}</Text>
-        </Pressable>
-      </View>
-      <View style={styles.contentContainer}>
-        <Pressable onPress={deleteHandler}>
-          <Ionicons name="trash-bin" style={{ color: "red", fontSize: 35 }} />
-        </Pressable>
-      </View>
+      <ManageExpenseForm
+        executable={executable}
+        type={type}
+        cancelHandler={cancelHandler}
+        defaultValues={selectedExpense}
+      />
+      <View style={styles.contentContainer}>{trashBen}</View>
     </Screen>
   );
 }
@@ -72,16 +69,6 @@ function ManageExpense({ navigation, route }) {
 export default ManageExpense;
 
 const styles = StyleSheet.create({
-  btnContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  btn: {
-    // backgroundColor: GlobalStyles.colors.lightPurple,
-    padding: 6,
-    borderRadius: 8,
-    paddingHorizontal: 24,
-  },
   contentContainer: {
     marginTop: 15,
     borderTopWidth: 1,

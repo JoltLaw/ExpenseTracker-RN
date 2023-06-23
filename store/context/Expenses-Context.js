@@ -10,9 +10,7 @@ export const ExpensesContext = createContext({
 });
 
 function ExpensesContextProvider({ children }) {
-  const [expenses, setExpenses] = useState([
-    { reason: "book", amount: 40, date: "08-19-04" },
-  ]);
+  const [expenses, setExpenses] = useState([]);
 
   function addExpense(reason, amount, date) {
     const newExpense = expenseItem(reason, amount, date);

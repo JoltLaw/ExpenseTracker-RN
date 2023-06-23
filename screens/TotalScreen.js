@@ -7,6 +7,7 @@ import ExpenseItem from "../components/ExpenseItem";
 import AddExpense from "../components/AddExpense";
 import { ExpensesContext } from "../store/context/Expenses-Context";
 import { useContext } from "react";
+import ExpenseList from "../components/ExpenseList";
 const Stack = createStackNavigator();
 
 function TotalScreenComponent({ navigation }) {
@@ -20,20 +21,8 @@ function TotalScreenComponent({ navigation }) {
   return (
     <Screen>
       <ParamsBar timeFrame={"All Time"} amount={total.toFixed(2)}></ParamsBar>
-      <FlatList
-        data={data}
-        renderItem={({ item }) => {
-          return (
-            <ExpenseItem
-              id={data.indexOf(item)}
-              reason={item.reason}
-              amount={item.amount}
-              date={item.date}
-              navi={navigation}
-            />
-          );
-        }}
-      />
+
+      <ExpenseList navigation={navigation} data={data} />
     </Screen>
   );
 }

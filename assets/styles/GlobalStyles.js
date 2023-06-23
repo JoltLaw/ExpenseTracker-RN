@@ -6,5 +6,6 @@ export const GlobalStyles = {
     lavander: "#bc94b7",
     darkLavander: "#594457",
     offWeightLavander: "#faeff9",
+    erorrText: "#ff4848",
   },
 };

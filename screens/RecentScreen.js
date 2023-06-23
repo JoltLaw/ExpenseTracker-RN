@@ -8,11 +8,25 @@ import { GlobalStyles } from "../assets/styles/GlobalStyles";
 import AddExpense from "../components/AddExpense";
 import { ExpensesContext } from "../store/context/Expenses-Context";
 import { useContext } from "react";
+import ExpenseList from "../components/ExpenseList";
 const Stack = createStackNavigator();
 
 function RecentScreenComponent({ navigation }) {
   const context = useContext(ExpensesContext);
-  const data = context.expenses;
+
+  const today = new Date();
+
+  const lastWeek = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() - 7
+  );
+
+  const pastSevenDays = context.expenses.filter((expense) => {
+    const expenseDate = new Date(expense.date);
+    return expenseDate > lastWeek;
+  });
+
   let total = 0;
   context.expenses.forEach((expense) => {
     total = total + expense.amount;
@@ -21,20 +35,7 @@ function RecentScreenComponent({ navigation }) {
   return (
     <Screen>
       <ParamsBar timeFrame={"Last 7 Days"} amount={total.toFixed(2)} />
-      <FlatList
-        data={data}
-        renderItem={({ item }) => {
-          return (
-            <ExpenseItem
-              id={data.indexOf(item)}
-              reason={item.reason}
-              amount={item.amount}
-              date={item.date}
-              navi={navigation}
-            />
-          );
-        }}
-      />
+      <ExpenseList navigation={navigation} data={pastSevenDays} />
     </Screen>
   );
 }
